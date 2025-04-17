@@ -41,7 +41,7 @@ Add to your LazyVim config (e.g., in `lua/plugins/fountain.lua`):
 
 ```lua
 return {
-  "yourusername/nvim-fountain",
+  "00msjr/nvim-fountain",
   ft = "fountain",  -- Lazy-load only for fountain files
   config = function()
     require("nvim-fountain").setup({
@@ -60,7 +60,7 @@ return {
 
 ```lua
 use {
-  "yourusername/nvim-fountain",
+  "00msjr/nvim-fountain",
   ft = "fountain",  -- Lazy-load only for fountain files
   config = function()
     require("nvim-fountain").setup({
@@ -74,7 +74,7 @@ use {
 
 ```vim
 " In your init.vim
-Plug 'yourusername/nvim-fountain', {'for': 'fountain'}
+Plug '00msjr/nvim-fountain', {'for': 'fountain'}
 
 " After plug#end(), add:
 augroup fountain_setup
@@ -88,10 +88,11 @@ augroup END
 ```bash
 # Clone the repository
 mkdir -p ~/.local/share/nvim/site/pack/plugins/start/
-git clone https://github.com/yourusername/nvim-fountain.git ~/.local/share/nvim/site/pack/plugins/start/nvim-fountain
+git clone https://github.com/00msjr/nvim-fountain.git ~/.local/share/nvim/site/pack/plugins/start/nvim-fountain
 ```
 
 Then in your init.lua:
+
 ```lua
 -- Initialize the plugin
 require('nvim-fountain').setup()
@@ -116,10 +117,12 @@ require("nvim-fountain").setup({
 ## Commands
 
 ### Editing and Navigation
+
 - `:FountainStats` - Display screenplay statistics (scene count, character appearances, etc.)
 - `:FountainFormat` - Format the current fountain document
 
 ### Export and Preview
+
 - `:FountainExportPDF [filename]` - Export to PDF (optional filename)
 - `:FountainExportHTML [filename]` - Export to HTML (optional filename)
 - `:FountainExportFDX [filename]` - Export to Final Draft (FDX) format (optional filename)
