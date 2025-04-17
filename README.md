@@ -1,25 +1,24 @@
-vim-fountain - A VIM plugin for the fountain markup language
-============================================================
+# nvim-fountain
 
-A bundlified version of Carson Fire's [vim-fountain](http://www.vim.org/scripts/script.php?script_id=3880).
+A modern Neovim plugin for the [Fountain](https://fountain.io/) screenplay markup language, forked from Carson Fire's [vim-fountain](http://www.vim.org/scripts/script.php?script_id=3880).
 
+## Features
 
-Original description
---------------------
+- Syntax highlighting for Fountain screenplay format
+- Navigation between scene headings
+- Keyboard shortcuts for common screenwriting tasks
+- Screenplay statistics (scene count, character appearances, etc.)
+- Export to PDF, HTML, and Final Draft formats
+- Preview in browser
+- Compatible with Neovim and LazyVim
 
-Fountain is a plain text markup language for screenwriting.
+## About Fountain
 
-Previously SPMD (screenplay markdown), Fountain is very official, now, and getting to be something of a Big Deal, as it merges two similar screenwriting projects into one. The format can be converted into Final Draft files (FDX) and HTML, and can be imported by Final Draft and Movie Magic. Scrippets (less powerful conversion) is available for WordPress, BBEdit, and other web standards.
+Fountain is a plain text markup language for screenwriting. The format can be converted into Final Draft files (FDX) and HTML, and can be imported by Final Draft and Movie Magic.
 
-http://fountain.io/
+The official [Fountain website](https://fountain.io/) contains helpful material, including sample scripts and apps.
 
-Fountain is much like SPMD, with some important changes. Atx headers are now supported in order to create sections, and this makes Fountain compatible with the Voom outliner (vimscript #2657) in Markdown mode.
-
-Commenting has been changed; and an important feature called Boneyard is introduced, allowing for flexible striking of deleted material.
-
-Known issues in the current version: text emphasis only renders in 'normal' text (action, not dialogue), and adding eol double-spaces does not have the intended corrective effect (this should be fixed in an update).
-
-The official Fountain site contains a great deal of helpful material, including sample scripts and apps. In brief, Fountain allows you to type a screenplay in plain text. Here is an excerpt from Big Fish by John August, one of the screenwriters behind Fountain, and note that the text can be flush or tabbed as desired.
+Here is an excerpt from Big Fish by John August, one of the screenwriters behind Fountain:
 
 ```
 EDWARD
@@ -34,16 +33,127 @@ ADULT EDWARD (V.O.)
 Now, it's common knowledge that most towns of a certain size have a witch, if only to eat misbehaving children and the occasional puppy who wanders into her yard.  Witches use those bones to cast spells and curses that make the land infertile.
 ```
 
-Happy screenwriting!
+## Installation
 
-Installing and using
---------------------
+### Using [LazyVim](https://github.com/LazyVim/LazyVim) / [lazy.nvim](https://github.com/folke/lazy.nvim)
 
-If you're using vim-plug, simplty add
+Add to your LazyVim config (e.g., in `lua/plugins/fountain.lua`):
 
+```lua
+return {
+  "yourusername/nvim-fountain",
+  ft = "fountain",  -- Lazy-load only for fountain files
+  config = function()
+    require("nvim-fountain").setup({
+      -- Optional configuration
+      keymaps = {
+        next_scene = "]]",
+        prev_scene = "[[",
+        uppercase_line = "<S-CR>",
+      },
+    })
+  end,
+}
 ```
-Plug 'kblin/vim-fountain'
+
+### Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+```lua
+use {
+  "yourusername/nvim-fountain",
+  ft = "fountain",  -- Lazy-load only for fountain files
+  config = function()
+    require("nvim-fountain").setup({
+      -- Optional configuration
+    })
+  end
+}
 ```
 
-to your `.vimrc` file.
+### Using [vim-plug](https://github.com/junegunn/vim-plug)
 
+```vim
+" In your init.vim
+Plug 'yourusername/nvim-fountain', {'for': 'fountain'}
+
+" After plug#end(), add:
+augroup fountain_setup
+  autocmd!
+  autocmd FileType fountain lua require('nvim-fountain').setup()
+augroup END
+```
+
+### Using built-in Neovim package manager
+
+```bash
+# Clone the repository
+mkdir -p ~/.local/share/nvim/site/pack/plugins/start/
+git clone https://github.com/yourusername/nvim-fountain.git ~/.local/share/nvim/site/pack/plugins/start/nvim-fountain
+```
+
+Then in your init.lua:
+```lua
+-- Initialize the plugin
+require('nvim-fountain').setup()
+```
+
+## Configuration
+
+You can customize the plugin by passing options to the setup function:
+
+```lua
+require("nvim-fountain").setup({
+  keymaps = {
+    next_scene = "]]",
+    prev_scene = "[[",
+    uppercase_line = "<S-CR>",
+  },
+  use_treesitter = true,  -- Enable treesitter integration if available
+  -- Additional options
+})
+```
+
+## Commands
+
+### Editing and Navigation
+- `:FountainStats` - Display screenplay statistics (scene count, character appearances, etc.)
+- `:FountainFormat` - Format the current fountain document
+
+### Export and Preview
+- `:FountainExportPDF [filename]` - Export to PDF (optional filename)
+- `:FountainExportHTML [filename]` - Export to HTML (optional filename)
+- `:FountainExportFDX [filename]` - Export to Final Draft (FDX) format (optional filename)
+- `:FountainPreview` - Preview screenplay in browser
+
+## Default Keymaps
+
+- `]]` - Navigate to next scene heading
+- `[[` - Navigate to previous scene heading
+- `<S-CR>` - Make current line uppercase and move to next line
+
+## Screenplay Statistics
+
+The `:FountainStats` command provides useful information about your screenplay:
+
+- Total number of scenes
+- List of characters with number of appearances
+- Dialogue and action line counts
+- Total line count
+
+This can help track your screenplay's structure and character balance.
+
+## Export and Preview
+
+The export functionality requires [afterwriting](https://github.com/ifrost/afterwriting-labs/blob/master/docs/clients.md) to be installed:
+
+```bash
+npm install -g afterwriting
+```
+
+Once installed, you can use the export commands to convert your Fountain screenplay to various formats:
+
+- PDF: `:FountainExportPDF [optional-filename.pdf]`
+- HTML: `:FountainExportHTML [optional-filename.html]`
+- Final Draft: `:FountainExportFDX [optional-filename.fdx]`
+
+The preview command (`:FountainPreview`) generates a temporary HTML file and opens it in your default browser.
