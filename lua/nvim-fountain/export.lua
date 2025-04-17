@@ -21,6 +21,42 @@ local function get_config()
   return vim.tbl_deep_extend("force", default_config, config)
 end
 
+-- Find afterwriting executable
+local function find_afterwriting()
+  -- Check if directly in PATH
+  if vim.fn.executable('afterwriting') == 1 then
+    return 'afterwriting'
+  end
+  
+  -- Try to find afterwriting in common npm paths
+  local possible_paths = {
+    vim.fn.expand('~/.npm-global/bin/afterwriting'),
+    vim.fn.expand('~/.nvm/versions/node/*/bin/afterwriting'),
+    vim.fn.expand('/usr/local/bin/afterwriting'),
+    vim.fn.expand('/opt/homebrew/bin/afterwriting'),
+    vim.fn.expand('~/AppData/Roaming/npm/afterwriting.cmd'), -- Windows
+  }
+  
+  for _, path in ipairs(possible_paths) do
+    local expanded_paths = vim.fn.glob(path, false, true)
+    for _, expanded_path in ipairs(expanded_paths) do
+      if vim.fn.executable(expanded_path) == 1 then
+        return expanded_path
+      end
+    end
+  end
+  
+  -- Try alternative command names
+  local alternative_names = {'afterwriting-cli', 'afterwritingcli', 'aw'}
+  for _, name in ipairs(alternative_names) do
+    if vim.fn.executable(name) == 1 then
+      return name
+    end
+  end
+  
+  return nil
+end
+
 -- Export to PDF using afterwriting
 function M.export_pdf(output_path)
   local config = get_config()
@@ -36,19 +72,23 @@ function M.export_pdf(output_path)
     end
   end
   
-  -- Check if afterwriting is installed
-  if vim.fn.executable('afterwriting') ~= 1 then
+  -- Find afterwriting
+  local afterwriting_path = find_afterwriting()
+  if not afterwriting_path then
     vim.notify("afterwriting not found. Install with: npm install -g afterwriting", vim.log.levels.ERROR)
     return
   end
+  
+  vim.notify("Using afterwriting at: " .. afterwriting_path, vim.log.levels.INFO)
   
   -- Save current buffer
   vim.cmd('write')
   
   -- Run afterwriting
-  local cmd = string.format('afterwriting --source "%s" --pdf "%s" %s', 
-                           current_file, output_path, config.pdf.options or "")
-  vim.notify("Exporting to PDF...", vim.log.levels.INFO)
+  local cmd = string.format('"%s" --source "%s" --pdf "%s" %s', 
+                           afterwriting_path, current_file, output_path, config.pdf.options or "")
+  
+  vim.notify("Exporting to PDF with command: " .. cmd, vim.log.levels.INFO)
   
   -- Use job to run in background
   vim.fn.jobstart(cmd, {
@@ -56,7 +96,13 @@ function M.export_pdf(output_path)
       if exit_code == 0 then
         vim.notify("Exported to " .. output_path, vim.log.levels.INFO)
       else
-        vim.notify("Export to PDF failed", vim.log.levels.ERROR)
+        vim.notify("Export to PDF failed with exit code: " .. exit_code, vim.log.levels.ERROR)
+      end
+    end,
+    on_stderr = function(_, data)
+      if data and #data > 0 then
+        local error_msg = table.concat(data, "\n")
+        vim.notify("Error: " .. error_msg, vim.log.levels.ERROR)
       end
     end
   })
@@ -77,19 +123,23 @@ function M.export_html(output_path)
     end
   end
   
-  -- Check if afterwriting is installed
-  if vim.fn.executable('afterwriting') ~= 1 then
+  -- Find afterwriting
+  local afterwriting_path = find_afterwriting()
+  if not afterwriting_path then
     vim.notify("afterwriting not found. Install with: npm install -g afterwriting", vim.log.levels.ERROR)
     return
   end
+  
+  vim.notify("Using afterwriting at: " .. afterwriting_path, vim.log.levels.INFO)
   
   -- Save current buffer
   vim.cmd('write')
   
   -- Run afterwriting
-  local cmd = string.format('afterwriting --source "%s" --html "%s" %s', 
-                           current_file, output_path, config.html.options or "")
-  vim.notify("Exporting to HTML...", vim.log.levels.INFO)
+  local cmd = string.format('"%s" --source "%s" --html "%s" %s', 
+                           afterwriting_path, current_file, output_path, config.html.options or "")
+  
+  vim.notify("Exporting to HTML with command: " .. cmd, vim.log.levels.INFO)
   
   -- Use job to run in background
   vim.fn.jobstart(cmd, {
@@ -97,7 +147,13 @@ function M.export_html(output_path)
       if exit_code == 0 then
         vim.notify("Exported to " .. output_path, vim.log.levels.INFO)
       else
-        vim.notify("Export to HTML failed", vim.log.levels.ERROR)
+        vim.notify("Export to HTML failed with exit code: " .. exit_code, vim.log.levels.ERROR)
+      end
+    end,
+    on_stderr = function(_, data)
+      if data and #data > 0 then
+        local error_msg = table.concat(data, "\n")
+        vim.notify("Error: " .. error_msg, vim.log.levels.ERROR)
       end
     end
   })
@@ -118,19 +174,23 @@ function M.export_fdx(output_path)
     end
   end
   
-  -- Check if afterwriting is installed
-  if vim.fn.executable('afterwriting') ~= 1 then
+  -- Find afterwriting
+  local afterwriting_path = find_afterwriting()
+  if not afterwriting_path then
     vim.notify("afterwriting not found. Install with: npm install -g afterwriting", vim.log.levels.ERROR)
     return
   end
+  
+  vim.notify("Using afterwriting at: " .. afterwriting_path, vim.log.levels.INFO)
   
   -- Save current buffer
   vim.cmd('write')
   
   -- Run afterwriting
-  local cmd = string.format('afterwriting --source "%s" --fdx "%s" %s', 
-                           current_file, output_path, config.fdx.options or "")
-  vim.notify("Exporting to Final Draft...", vim.log.levels.INFO)
+  local cmd = string.format('"%s" --source "%s" --fdx "%s" %s', 
+                           afterwriting_path, current_file, output_path, config.fdx.options or "")
+  
+  vim.notify("Exporting to Final Draft with command: " .. cmd, vim.log.levels.INFO)
   
   -- Use job to run in background
   vim.fn.jobstart(cmd, {
@@ -138,7 +198,13 @@ function M.export_fdx(output_path)
       if exit_code == 0 then
         vim.notify("Exported to " .. output_path, vim.log.levels.INFO)
       else
-        vim.notify("Export to Final Draft failed", vim.log.levels.ERROR)
+        vim.notify("Export to Final Draft failed with exit code: " .. exit_code, vim.log.levels.ERROR)
+      end
+    end,
+    on_stderr = function(_, data)
+      if data and #data > 0 then
+        local error_msg = table.concat(data, "\n")
+        vim.notify("Error: " .. error_msg, vim.log.levels.ERROR)
       end
     end
   })
@@ -149,18 +215,23 @@ function M.preview()
   local current_file = vim.fn.expand('%:p')
   local temp_html = vim.fn.tempname() .. '.html'
   
-  -- Check if afterwriting is installed
-  if vim.fn.executable('afterwriting') ~= 1 then
+  -- Find afterwriting
+  local afterwriting_path = find_afterwriting()
+  if not afterwriting_path then
     vim.notify("afterwriting not found. Install with: npm install -g afterwriting", vim.log.levels.ERROR)
     return
   end
   
+  vim.notify("Using afterwriting at: " .. afterwriting_path, vim.log.levels.INFO)
+  
   -- Save current buffer
   vim.cmd('write')
   
-  -- Convert to HTML
-  local cmd = string.format('afterwriting --source "%s" --html "%s" --overwrite', current_file, temp_html)
-  vim.notify("Generating preview...", vim.log.levels.INFO)
+  -- Run afterwriting
+  local cmd = string.format('"%s" --source "%s" --html "%s" --overwrite', 
+                           afterwriting_path, current_file, temp_html)
+  
+  vim.notify("Generating preview with command: " .. cmd, vim.log.levels.INFO)
   
   vim.fn.jobstart(cmd, {
     on_exit = function(_, exit_code)
@@ -182,7 +253,13 @@ function M.preview()
           vim.notify("Could not determine how to open the browser", vim.log.levels.ERROR)
         end
       else
-        vim.notify("Preview generation failed", vim.log.levels.ERROR)
+        vim.notify("Preview generation failed with exit code: " .. exit_code, vim.log.levels.ERROR)
+      end
+    end,
+    on_stderr = function(_, data)
+      if data and #data > 0 then
+        local error_msg = table.concat(data, "\n")
+        vim.notify("Error: " .. error_msg, vim.log.levels.ERROR)
       end
     end
   })
