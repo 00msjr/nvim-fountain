@@ -5,7 +5,7 @@ local M = {}
 local default_config = {
   output_dir = nil,
   pdf = {
-    options = "--overwrite --font Courier",
+    options = "--overwrite",  -- Removed the fonts option that was causing issues
   },
   html = {
     options = "--overwrite",

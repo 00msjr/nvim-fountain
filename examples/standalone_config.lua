@@ -23,7 +23,7 @@ return {
     -- PDF export options
     pdf = {
       -- Options passed to afterwriting
-      options = "--overwrite --font Courier",
+      options = "--overwrite",
     },
     
     -- HTML export options

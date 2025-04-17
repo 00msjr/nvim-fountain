@@ -122,7 +122,7 @@ require("nvim-fountain").setup({
 
     -- PDF export options
     pdf = {
-      options = "--overwrite --font Courier",
+      options = "--overwrite",
     },
 
     -- HTML export options
