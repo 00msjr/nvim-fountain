@@ -5,12 +5,6 @@ local M = {}
 local default_config = {
   output_dir = nil,
   pdf = {
-    options = "--overwrite",  -- Removed the fonts option that was causing issues
-  },
-  html = {
-    options = "--overwrite",
-  },
-  fdx = {
     options = "--overwrite",
   },
 }
@@ -45,82 +39,6 @@ function M.export_pdf(output_path)
   -- Add any additional options
   if config.pdf.options and config.pdf.options ~= "" then
     cmd = cmd .. " " .. config.pdf.options
-  end
-  
-  vim.notify("Running: " .. cmd, vim.log.levels.INFO)
-  
-  -- Use system() instead of jobstart for direct execution
-  local result = vim.fn.system(cmd)
-  
-  if vim.v.shell_error == 0 then
-    vim.notify("Successfully exported to " .. output_path, vim.log.levels.INFO)
-  else
-    vim.notify("Export failed: " .. result, vim.log.levels.ERROR)
-  end
-end
-
--- Export to HTML using afterwriting - direct system call approach
-function M.export_html(output_path)
-  local config = get_config()
-  local current_file = vim.fn.expand('%:p')
-  
-  -- Determine output path
-  if not output_path then
-    if config.output_dir then
-      local filename = vim.fn.fnamemodify(current_file, ':t:r') .. '.html'
-      output_path = config.output_dir .. '/' .. filename
-    else
-      output_path = vim.fn.expand('%:p:r') .. '.html'
-    end
-  end
-  
-  -- Save current buffer
-  vim.cmd('write')
-  
-  -- Build the command - exactly like the working CLI command
-  local cmd = string.format('afterwriting --source "%s" --html "%s"', current_file, output_path)
-  
-  -- Add any additional options
-  if config.html.options and config.html.options ~= "" then
-    cmd = cmd .. " " .. config.html.options
-  end
-  
-  vim.notify("Running: " .. cmd, vim.log.levels.INFO)
-  
-  -- Use system() instead of jobstart for direct execution
-  local result = vim.fn.system(cmd)
-  
-  if vim.v.shell_error == 0 then
-    vim.notify("Successfully exported to " .. output_path, vim.log.levels.INFO)
-  else
-    vim.notify("Export failed: " .. result, vim.log.levels.ERROR)
-  end
-end
-
--- Export to FDX using afterwriting - direct system call approach
-function M.export_fdx(output_path)
-  local config = get_config()
-  local current_file = vim.fn.expand('%:p')
-  
-  -- Determine output path
-  if not output_path then
-    if config.output_dir then
-      local filename = vim.fn.fnamemodify(current_file, ':t:r') .. '.fdx'
-      output_path = config.output_dir .. '/' .. filename
-    else
-      output_path = vim.fn.expand('%:p:r') .. '.fdx'
-    end
-  end
-  
-  -- Save current buffer
-  vim.cmd('write')
-  
-  -- Build the command - exactly like the working CLI command
-  local cmd = string.format('afterwriting --source "%s" --fdx "%s"', current_file, output_path)
-  
-  -- Add any additional options
-  if config.fdx.options and config.fdx.options ~= "" then
-    cmd = cmd .. " " .. config.fdx.options
   end
   
   vim.notify("Running: " .. cmd, vim.log.levels.INFO)

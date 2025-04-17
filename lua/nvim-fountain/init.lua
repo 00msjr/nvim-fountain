@@ -19,12 +19,6 @@ M.config = {
   export = {
     output_dir = nil,
     pdf = {
-      options = "--overwrite --font Courier",
-    },
-    html = {
-      options = "--overwrite",
-    },
-    fdx = {
       options = "--overwrite",
     },
   },
@@ -94,16 +88,6 @@ function M.create_commands()
     local output_path = opts.args ~= "" and opts.args or nil
     require('nvim-fountain.export').export_pdf(output_path)
   end, { nargs = '?', desc = "Export fountain to PDF" })
-  
-  vim.api.nvim_create_user_command("FountainExportHTML", function(opts)
-    local output_path = opts.args ~= "" and opts.args or nil
-    require('nvim-fountain.export').export_html(output_path)
-  end, { nargs = '?', desc = "Export fountain to HTML" })
-  
-  vim.api.nvim_create_user_command("FountainExportFDX", function(opts)
-    local output_path = opts.args ~= "" and opts.args or nil
-    require('nvim-fountain.export').export_fdx(output_path)
-  end, { nargs = '?', desc = "Export fountain to Final Draft (FDX)" })
   
   vim.api.nvim_create_user_command("FountainPreview", function()
     require('nvim-fountain.export').preview()

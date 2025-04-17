@@ -124,16 +124,6 @@ require("nvim-fountain").setup({
     pdf = {
       options = "--overwrite",
     },
-
-    -- HTML export options
-    html = {
-      options = "--overwrite",
-    },
-
-    -- Final Draft export options
-    fdx = {
-      options = "--overwrite",
-    },
   },
 
   -- Enable treesitter integration if available
@@ -151,8 +141,6 @@ require("nvim-fountain").setup({
 ### Export and Preview
 
 - `:FountainExportPDF [filename]` - Export to PDF (optional filename)
-- `:FountainExportHTML [filename]` - Export to HTML (optional filename)
-- `:FountainExportFDX [filename]` - Export to Final Draft (FDX) format (optional filename)
 - `:FountainPreview` - Preview screenplay in browser
 
 ## Default Keymaps
@@ -180,11 +168,9 @@ The export functionality requires [afterwriting](https://github.com/ifrost/after
 npm install -g afterwriting
 ```
 
-Once installed, you can use the export commands to convert your Fountain screenplay to various formats:
+Once installed, you can use the export commands to convert your Fountain screenplay to PDF:
 
 - PDF: `:FountainExportPDF [optional-filename.pdf]`
-- HTML: `:FountainExportHTML [optional-filename.html]`
-- Final Draft: `:FountainExportFDX [optional-filename.fdx]`
 
 The preview command (`:FountainPreview`) generates a temporary HTML file and opens it in your default browser.
 

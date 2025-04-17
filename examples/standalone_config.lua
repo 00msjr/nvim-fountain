@@ -25,16 +25,6 @@ return {
       -- Options passed to afterwriting
       options = "--overwrite",
     },
-    
-    -- HTML export options
-    html = {
-      options = "--overwrite",
-    },
-    
-    -- Final Draft export options
-    fdx = {
-      options = "--overwrite",
-    },
   },
   
   -- Enable treesitter integration if available
