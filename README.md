@@ -51,6 +51,10 @@ return {
         prev_scene = "[[",
         uppercase_line = "<S-CR>",
       },
+      -- Export configuration
+      export = {
+        pdf = { options = "--overwrite --font Courier" },
+      },
     })
   end,
 }
@@ -100,17 +104,40 @@ require('nvim-fountain').setup()
 
 ## Configuration
 
-You can customize the plugin by passing options to the setup function:
+You can customize the plugin by passing options to the setup function. See the [examples directory](./examples/) for complete configuration examples.
 
 ```lua
 require("nvim-fountain").setup({
+  -- Keyboard mappings
   keymaps = {
     next_scene = "]]",
     prev_scene = "[[",
     uppercase_line = "<S-CR>",
   },
-  use_treesitter = true,  -- Enable treesitter integration if available
-  -- Additional options
+
+  -- Export settings
+  export = {
+    -- Default export directory (nil means same as source file)
+    output_dir = nil,
+
+    -- PDF export options
+    pdf = {
+      options = "--overwrite --font Courier",
+    },
+
+    -- HTML export options
+    html = {
+      options = "--overwrite",
+    },
+
+    -- Final Draft export options
+    fdx = {
+      options = "--overwrite",
+    },
+  },
+
+  -- Enable treesitter integration if available
+  use_treesitter = true,
 })
 ```
 
@@ -160,3 +187,22 @@ Once installed, you can use the export commands to convert your Fountain screenp
 - Final Draft: `:FountainExportFDX [optional-filename.fdx]`
 
 The preview command (`:FountainPreview`) generates a temporary HTML file and opens it in your default browser.
+
+## Example Files
+
+The plugin includes example files to help you get started:
+
+- `examples/template.fountain`: A sample screenplay demonstrating Fountain syntax
+- `examples/lazyvim_config.lua`: Configuration example for LazyVim users
+- `examples/standalone_config.lua`: Configuration example for direct use with any Neovim setup
+
+To use the template:
+
+```bash
+cp examples/template.fountain ~/my-screenplay.fountain
+nvim ~/my-screenplay.fountain
+```
+
+## Contributing
+
+Contributions are welcome! See the [examples/COMMIT_MESSAGE.md](./examples/COMMIT_MESSAGE.md) file for a summary of the changes made to modernize this plugin.

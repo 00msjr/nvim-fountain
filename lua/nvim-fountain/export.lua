@@ -1,10 +1,40 @@
 -- nvim-fountain export module
 local M = {}
 
+-- Default export configuration
+local default_config = {
+  output_dir = nil,
+  pdf = {
+    options = "--overwrite --font Courier",
+  },
+  html = {
+    options = "--overwrite",
+  },
+  fdx = {
+    options = "--overwrite",
+  },
+}
+
+-- Get export configuration
+local function get_config()
+  local config = require('nvim-fountain').config.export or {}
+  return vim.tbl_deep_extend("force", default_config, config)
+end
+
 -- Export to PDF using afterwriting
 function M.export_pdf(output_path)
+  local config = get_config()
   local current_file = vim.fn.expand('%:p')
-  output_path = output_path or vim.fn.expand('%:p:r') .. '.pdf'
+  
+  -- Determine output path
+  if not output_path then
+    if config.output_dir then
+      local filename = vim.fn.fnamemodify(current_file, ':t:r') .. '.pdf'
+      output_path = config.output_dir .. '/' .. filename
+    else
+      output_path = vim.fn.expand('%:p:r') .. '.pdf'
+    end
+  end
   
   -- Check if afterwriting is installed
   if vim.fn.executable('afterwriting') ~= 1 then
@@ -16,7 +46,8 @@ function M.export_pdf(output_path)
   vim.cmd('write')
   
   -- Run afterwriting
-  local cmd = string.format('afterwriting --source "%s" --pdf "%s"', current_file, output_path)
+  local cmd = string.format('afterwriting --source "%s" --pdf "%s" %s', 
+                           current_file, output_path, config.pdf.options or "")
   vim.notify("Exporting to PDF...", vim.log.levels.INFO)
   
   -- Use job to run in background
@@ -33,8 +64,18 @@ end
 
 -- Export to HTML
 function M.export_html(output_path)
+  local config = get_config()
   local current_file = vim.fn.expand('%:p')
-  output_path = output_path or vim.fn.expand('%:p:r') .. '.html'
+  
+  -- Determine output path
+  if not output_path then
+    if config.output_dir then
+      local filename = vim.fn.fnamemodify(current_file, ':t:r') .. '.html'
+      output_path = config.output_dir .. '/' .. filename
+    else
+      output_path = vim.fn.expand('%:p:r') .. '.html'
+    end
+  end
   
   -- Check if afterwriting is installed
   if vim.fn.executable('afterwriting') ~= 1 then
@@ -46,7 +87,8 @@ function M.export_html(output_path)
   vim.cmd('write')
   
   -- Run afterwriting
-  local cmd = string.format('afterwriting --source "%s" --html "%s"', current_file, output_path)
+  local cmd = string.format('afterwriting --source "%s" --html "%s" %s', 
+                           current_file, output_path, config.html.options or "")
   vim.notify("Exporting to HTML...", vim.log.levels.INFO)
   
   -- Use job to run in background
@@ -63,8 +105,18 @@ end
 
 -- Export to FDX (Final Draft)
 function M.export_fdx(output_path)
+  local config = get_config()
   local current_file = vim.fn.expand('%:p')
-  output_path = output_path or vim.fn.expand('%:p:r') .. '.fdx'
+  
+  -- Determine output path
+  if not output_path then
+    if config.output_dir then
+      local filename = vim.fn.fnamemodify(current_file, ':t:r') .. '.fdx'
+      output_path = config.output_dir .. '/' .. filename
+    else
+      output_path = vim.fn.expand('%:p:r') .. '.fdx'
+    end
+  end
   
   -- Check if afterwriting is installed
   if vim.fn.executable('afterwriting') ~= 1 then
@@ -76,7 +128,8 @@ function M.export_fdx(output_path)
   vim.cmd('write')
   
   -- Run afterwriting
-  local cmd = string.format('afterwriting --source "%s" --fdx "%s"', current_file, output_path)
+  local cmd = string.format('afterwriting --source "%s" --fdx "%s" %s', 
+                           current_file, output_path, config.fdx.options or "")
   vim.notify("Exporting to Final Draft...", vim.log.levels.INFO)
   
   -- Use job to run in background
@@ -106,7 +159,7 @@ function M.preview()
   vim.cmd('write')
   
   -- Convert to HTML
-  local cmd = string.format('afterwriting --source "%s" --html "%s"', current_file, temp_html)
+  local cmd = string.format('afterwriting --source "%s" --html "%s" --overwrite', current_file, temp_html)
   vim.notify("Generating preview...", vim.log.levels.INFO)
   
   vim.fn.jobstart(cmd, {

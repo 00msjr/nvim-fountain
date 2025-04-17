@@ -15,6 +15,26 @@ M.config = {
   },
   -- Enable treesitter integration if available
   use_treesitter = true,
+  -- Export configuration
+  export = {
+    output_dir = nil,
+    pdf = {
+      options = "--overwrite --font Courier",
+    },
+    html = {
+      options = "--overwrite",
+    },
+    fdx = {
+      options = "--overwrite",
+    },
+  },
+  -- Statistics settings
+  statistics = {
+    count_scenes = true,
+    count_characters = true,
+    count_dialogue = true,
+    count_action = true,
+  },
 }
 
 -- Setup function to be called by the user
@@ -93,7 +113,8 @@ end
 -- Navigate to next/previous scene heading
 function M.next_section(backwards)
   -- More comprehensive pattern to match scene headings
-  local pattern = "^\\s*[\\.]?\\s*\\([IE][XNT][XT]\\.\\|INT\\|EXT\\|INT/EXT\\|I/E\\)\\s"
+  -- This pattern matches all valid Fountain scene heading formats
+  local pattern = "^\\s*\\([\\.]\\s*\\)\\?\\(INT\\|EXT\\|EST\\|INT\\/EXT\\|I\\/E\\)[\\. ]"
   local flags = backwards and "b" or ""
   
   local line = vim.fn.search(pattern, flags)
